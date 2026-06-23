@@ -1,0 +1,172 @@
+
+name: underwater_aimnet_LA_official_v1
+model_type: QualiTeacher
+scale: 1
+num_gpu: auto
+manual_seed: 0
+find_unused_parameters: true
+
+colabator:
+  drop_threshold_multi_iqa: 1.0
+  drop_threshold_aug_robust: 1.0
+  use_clip: true
+  use_nr_iqa: true
+  use_brisque: true
+  clip_model_type: daclip_ViT-B-32
+  tokenizer_type: ViT-B-32
+  pretrained_clip_weight: ./pretrained_weights/daclip_ViT-B-32.pt
+  degradation_type: [1]  # 1: hazy (underwater closest to hazy)
+  clip_better: lower
+
+  nr_iqa_type: musiq
+  nr_iqa_better: higher
+  nr_iqa_scale: [0,100]
+
+  block_size: 144
+
+  weight_map_calculation: 'addition'
+
+datasets:
+  train:
+    name: TrainSet
+    type: SemiDatasetUnderwaterLA
+    dataroot_gt: ./datasets/Underwater/Semi-UIR/data/labeled1/GT
+    dataroot_lq: ./datasets/Underwater/Semi-UIR/data/labeled1/input
+    dataroot_la: ./datasets/Underwater/Semi-UIR/data/labeled1/LA
+    dataroot_real: ./datasets/Underwater/Semi-UIR/data/unlabeled/input
+    dataroot_real_la: ./datasets/Underwater/Semi-UIR/data/unlabeled/LA
+
+    use_resize_crop: true
+    use_hflip: true
+    use_rot: false
+
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+
+    num_worker_per_gpu: 8
+    batch_size_per_gpu: 8
+    mini_batch_sizes: [1]
+    iters: [50000]
+    gt_size: 288
+    gt_sizes: [288]
+
+    use_shuffle: true
+    dataset_enlarge_ratio: 5
+    prefetch_mode: ~
+
+  val:
+    name: UnderwaterTestR
+    type: SingleDatasetUnderwaterLA
+    dataroot_lq: ./datasets/Underwater/Semi-UIR/data/test/testR/input
+    dataroot_la: ./datasets/Underwater/Semi-UIR/data/test/testR/LA
+    io_backend:
+      type: disk
+
+network_g:
+  type: AIMnet
+  n_feat: 32
+  n_RCB: 2
+  chan_factor: 2
+  bias: true
+
+path:
+  experiments_root: ./experiments
+  pretrain_network_g: ./pretrained_weights/semi_uir.pth
+  pretrain_network_memory_bank: ~
+  param_key_g: state_dict
+  strict_load_g: false
+  resume_state: ~
+
+train:
+  ema_decay: 0.999
+  dpo_beta: 1.0
+  dpo_lambda: 1.0
+  dpo_delta: 0.1        # L1 margin
+  dpo_lambda2: 0.5       # L2 weight
+  use_local_consistency: true
+  local_consistency_weight: 1.0
+  lambda_identity: 0.005
+  dpo_start_iter: 2000
+  local_consistency_start_iter: 2000
+
+  optim_g:
+    type: AdamW
+    lr: !!float 5e-5
+    weight_decay: 0
+    betas: [0.9, 0.999]
+
+  # NOTE on the LR schedule: we intentionally keep the learning rate ~constant.
+  # `periods` is set much larger than `total_iter`, so the cosine curve barely
+  # decays — QualiTeacher trains a short "tier" (~10K iters) where restoration
+  # quality peaks for this backbone and is truncated there by design (no annealing
+  # needed). Backbones whose quality-graded score space needs a longer tier can
+  # simply raise `total_iter` (and `periods` accordingly).
+  gen_scheduler:
+    type: CosineAnnealingRestartCyclicLR
+    periods: [50000]
+    restart_weights: [1]
+    eta_mins: [0.000001]
+
+  total_iter: 20000
+  warmup_iter: -1
+
+  mixing_augs:
+    mixup: false
+    mixup_beta: 1.2
+    use_identity: true
+
+  pixel_opt:
+    type: L1Loss
+    loss_weight: !!float 0.5
+    reduction: none
+
+  use_clip_loss: true
+
+  contrastperceptual_opt:
+    type: ContrastPerceptualLoss
+    layer_weights:
+      'relu1_1': !!float 3.125e-2
+      'relu2_1': !!float 6.25e-2
+      'relu3_1': !!float 0.125
+      'relu4_1': !!float 0.25
+      'relu5_1': !!float 1.0
+    vgg_type: vgg19
+    use_input_norm: false
+    range_norm: false
+    perceptual_weight: !!float 0.2
+    style_weight: 0
+    criterion: l1
+
+# val:
+#   pbar: true
+#   val_freq: !!float 5000
+#   save_img: true
+#   window_size: 16
+#   save_source: true
+
+#   metrics:
+#     brisque:
+#       type: calculate_brisque
+#       crop_border: 0
+#       better: lower
+#     nima:
+#       type: calculate_nima
+#       crop_border: 0
+#       better: higher
+
+logger:
+  print_freq: 500
+  save_checkpoint_freq: !!float 5e3
+  use_tb_logger: true
+  wandb:
+    project: ~
+    resume_id: ~
+
+dist_params:
+  backend: nccl
+  port: 29500
+
+
+enable_drop_stat: true

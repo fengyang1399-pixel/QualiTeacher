@@ -1,0 +1,36 @@
+# Standard environment for QualiTeacher (most GPUs).
+# NOTE: For NVIDIA Blackwell / sm_120 GPUs, replace the pytorch line with a
+#       CUDA 12.8 build (pip install torch torchvision --index-url
+#       https://download.pytorch.org/whl/cu128) on Python >= 3.10. See README.
+name: qualiteacher
+channels:
+  - pytorch
+  - nvidia
+  - defaults
+dependencies:
+  - python=3.9
+  - pytorch=2.1.2
+  - torchvision=0.16.2
+  - torchaudio=2.1.2
+  - pytorch-cuda=12.1
+  - pip
+  - pip:
+      # modified BasicSR deps
+      - addict
+      - future
+      - lmdb
+      - numpy==1.26.3
+      - opencv-python==4.9.0.80
+      - Pillow
+      - pyyaml
+      - requests
+      - scikit-image
+      - scipy
+      - tb-nightly
+      - yapf
+      # QualiTeacher deps
+      - pyiqa==0.1.10
+      - timm==0.9.12
+      - einops
+      - tqdm
+      - mat73

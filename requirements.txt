@@ -1,0 +1,5 @@
+pyiqa==0.1.10
+timm==0.9.12
+einops
+tqdm
+mat73

@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.eggs/
+build/
+dist/
+.ipynb_checkpoints/
+
+# Editors / tools
+.vscode/
+.idea/
+.DS_Store
+
+# Project artifacts (regenerated locally)
+experiments/
+results/
+tb_logger/
+wandb/
+*.log
+
+# Datasets (download separately, see README)
+datasets/
+
+# Large pretrained / trained weights (provide via Google Drive, see README)
+pretrained_weights/*.pth
+pretrained_weights/*.pt
+pretrained_weights/*.ckpt

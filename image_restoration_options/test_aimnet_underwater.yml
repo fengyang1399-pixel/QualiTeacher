@@ -1,0 +1,126 @@
+name: test_aimnet_underwater_LA
+model_type: QualiTeacher
+scale: 1
+num_gpu: auto
+manual_seed: 0
+find_unused_parameters: true
+
+colabator:
+  use_clip: true
+  use_nr_iqa: true
+  use_brisque: true
+  clip_model_type: daclip_ViT-B-32
+  tokenizer_type: ViT-B-32
+  pretrained_clip_weight: ./pretrained_weights/daclip_ViT-B-32.pt
+  degradation_type: [1]
+  clip_better: lower
+
+  nr_iqa_type: musiq
+  nr_iqa_better: higher
+  nr_iqa_scale: [0, 100]
+
+  block_size: 144
+  weight_map_calculation: addition
+
+datasets:
+  val_0:
+    name: EUVP
+    type: SingleDatasetUnderwaterLA
+    dataroot_lq: ./datasets/Underwater/noref_test/EUVP
+    dataroot_la: ./datasets/Underwater/noref_test/EUVP/LA
+    dataset_enlarge_ratio: 1
+    rescale_too_large_image: false
+    prefetch_mode: ~
+    num_worker_per_gpu: 4
+    batch_size_per_gpu: 1
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+  val_1:
+    name: RUIE
+    type: SingleDatasetUnderwaterLA
+    dataroot_lq: ./datasets/Underwater/noref_test/RUIE
+    dataroot_la: ./datasets/Underwater/noref_test/RUIE/LA
+    dataset_enlarge_ratio: 1
+    rescale_too_large_image: false
+    prefetch_mode: ~
+    num_worker_per_gpu: 4
+    batch_size_per_gpu: 1
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+  val_2:
+    name: Seathru
+    type: SingleDatasetUnderwaterLA
+    dataroot_lq: ./datasets/Underwater/noref_test/Seathru
+    dataroot_la: ./datasets/Underwater/noref_test/Seathru/LA
+    dataset_enlarge_ratio: 1
+    rescale_too_large_image: true
+    rescale_max_side: 1920
+    prefetch_mode: ~
+    num_worker_per_gpu: 4
+    batch_size_per_gpu: 1
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+  val_3:
+    name: UIEB_C60
+    type: SingleDatasetUnderwaterLA
+    dataroot_lq: ./datasets/Underwater/noref_test/UIEB_C60
+    dataroot_la: ./datasets/Underwater/noref_test/UIEB_C60/LA
+    dataset_enlarge_ratio: 1
+    rescale_too_large_image: false
+    prefetch_mode: ~
+    num_worker_per_gpu: 4
+    batch_size_per_gpu: 1
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+network_g:
+  type: AIMnet
+  n_feat: 32
+  n_RCB: 2
+  chan_factor: 2
+  bias: true
+
+path:
+  pretrain_network_g: ./pretrained_weights/underwater_net_g_10000.pth
+  pretrain_network_memory_bank: ~
+  param_key_g: params_ema
+  strict_load_g: true
+  resume_state: ~
+
+val:
+  pbar: true
+  save_img: true
+  window_size: 0
+  save_source: false
+  save_all_stages: false
+
+  metrics:
+    brisque:
+      type: calculate_brisque
+      crop_border: 0
+      better: lower
+    nima:
+      type: calculate_nima
+      crop_border: 0
+      better: higher
+
+logger:
+  print_freq: 200
+  save_checkpoint_freq: !!float 5e3
+  use_tb_logger: false
+  wandb:
+    project: ~
+    resume_id: ~
+
+dist_params:
+  backend: nccl
+  port: 29500
+
+enable_drop_stat: true
