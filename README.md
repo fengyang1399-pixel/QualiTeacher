@@ -37,7 +37,7 @@ This is the official PyTorch implementation of the paper.
 
 ## 📷 Visual Results
 
-Qualitative results on the **Seathru** underwater benchmark. QualiTeacher removes the heavy blue-green color cast and restores natural color and contrast:
+Qualitative results on the **Seathru** underwater benchmark:
 
 <p align="center">
   <img src="figs/underwater_comparison.jpg" width="85%">
