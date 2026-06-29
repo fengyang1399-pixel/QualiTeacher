@@ -18,7 +18,7 @@ This is the official PyTorch implementation of the paper.
 ---
 
 ## 🔥 News
-- **2026-06-28:** Enhanced **Seathru** results and a visual comparison are released — see [Visual Results](#-visual-results). 🖼️
+- **2026-06-28:** Enhanced **Seathru** results are released — see [Visual Results](#-visual-results). 🖼️
 - **2026-06-22:** Code for the underwater pipeline is released. 🎉
 - Pretrained weights are available on Google Drive.
 
