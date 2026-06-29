@@ -18,10 +18,12 @@ This is the official PyTorch implementation of the paper.
 ---
 
 ## 🔥 News
+- **2026-06-28:** Enhanced **Seathru** results and a visual comparison are released — see [Visual Results](#-visual-results). 🖼️
 - **2026-06-22:** Code for the underwater pipeline is released. 🎉
-- Pretrained weights will be released on Google Drive.
+- Pretrained weights are available on Google Drive.
 
 ## 🔗 Contents
+- [Visual Results](#-visual-results)
 - [Dependencies and Installation](#️-dependencies-and-installation)
 - [Datasets](#-datasets)
 - [Pretrained Weights](#-pretrained-weights)
@@ -30,6 +32,18 @@ This is the official PyTorch implementation of the paper.
 - [Use QualiTeacher on Your Own Network](#-use-qualiteacher-on-your-own-network)
 - [Citation](#-citation)
 - [Acknowledgements](#-acknowledgements)
+
+---
+
+## 📷 Visual Results
+
+Qualitative results on the **Seathru** underwater benchmark. QualiTeacher removes the heavy blue-green color cast and restores natural color and contrast:
+
+<p align="center">
+  <img src="figs/underwater_comparison.jpg" width="85%">
+</p>
+
+➡️ **Full-resolution enhanced outputs** for the entire Seathru set (1,020 images) are available on our [**Google Drive**](https://drive.google.com/drive/folders/1KIhfwTAfrdyJLFpD_K7AaRQT6HI_bCCI?usp=sharing).
 
 ---
 
@@ -77,7 +91,7 @@ datasets/Underwater/
 
 ## 📦 Pretrained Weights
 
-Place the following under `./pretrained_weights/` (download links: **Google Drive — coming soon**):
+Download all weights from our [**Google Drive**](https://drive.google.com/drive/folders/11maArWIP5MWwiSBCsep8DPL8O723AK26?usp=sharing) and place them under `./pretrained_weights/`:
 
 | File | Purpose |
 |---|---|
